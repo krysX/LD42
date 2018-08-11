@@ -4,54 +4,81 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
-    public float speed;
-    public float mouseXSpeed;
-    public float mouseYSpeed;
-
-    Vector3 velocity;
-
     Rigidbody rb;
-    bool isGrounded = false;
+    GameObject[] walls;
+    bool grounded;
+
+    public float jumpSpeed;
+    public float speed;
+
+    public float mouseXspeed;
+    public float mouseYspeed;
+    public float turnSpeed;
+
+    
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        Camera.main.transform.position = transform.position;
+        Camera.main.transform.localPosition = Vector3.zero;
+        walls = GameObject.FindGameObjectsWithTag("Wall");
     }
 
     private void Update()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        float xAngle = Mathf.Sin(ray.GetPoint(1f).x) * Mathf.Rad2Deg;
-        float yAngle = Mathf.Sin(ray.GetPoint(1f).y) * Mathf.Rad2Deg;
-
-        transform.eulerAngles = new Vector3(Mathf.MoveTowardsAngle(transform.eulerAngles.y, yAngle, mouseYSpeed * Time.deltaTime),
-                                0,
-                                Mathf.MoveTowardsAngle(transform.eulerAngles.x, xAngle, mouseXSpeed * Time.deltaTime));
-
-
-        velocity = transform.up * speed;
-    }
-
-    private void FixedUpdate()
-    {
-        if (isGrounded && Input.GetKeyDown(KeyCode.Space))
-            rb.AddForce(velocity);
-    }
-
-    private void OnCollisionEnter(Collision coll)
-    {
-        if(coll.gameObject.tag == "Wall")
+        //Mouse X
+        float mouseInputX = Input.GetAxisRaw("Mouse X");
+        Camera.main.transform.eulerAngles += Vector3.up * mouseInputX * mouseXspeed * Time.deltaTime;
+        //Mouse Y
+        float mouseInputY = Input.GetAxisRaw("Mouse Y");
+        Camera.main.transform.eulerAngles += Vector3.left * mouseInputY * mouseYspeed * Time.deltaTime;
+        //Jump
+        if(Input.GetKeyDown(KeyCode.Space) && grounded)
         {
-            isGrounded = true;
+            rb.AddForce(jumpSpeed * transform.up);
+        }
+
+        if(!grounded)
+        { 
+            if(rb.velocity != Vector3.zero)
+            {
+                rb.velocity = speed * transform.forward;
+            }
+
+            if(Input.GetMouseButton(0))
+            {
+                rb.velocity = Vector3.zero;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit, 0.5f))
+                {
+                    if (hit.collider.gameObject.tag == "Wall")
+                    {
+                        transform.position = Vector3.MoveTowards(transform.position, hit.point, speed * Time.deltaTime);
+                    }
+                }
+            }
+        }
+
+        //Player rotation
+        Vector3 inputRotation = new Vector3(-Input.GetAxisRaw("Vertical"), Input.GetAxis("Horizontal"), 0).normalized;
+        transform.eulerAngles += inputRotation * speed * Time.deltaTime;
+    }
+
+    private void OnCollisionEnter(Collision c)
+    {
+        if(c.gameObject.tag == "Wall")
+        {
+            grounded = true;
         }
     }
 
-    private void OnCollisionExit(Collision coll)
+    private void OnCollisionExit(Collision c)
     {
-        if (coll.gameObject.tag == "Wall")
-        {
-            isGrounded = false;
+        if (c.gameObject.tag == "Wall")
+        { 
+            grounded = false;
         }
     }
+
 }
