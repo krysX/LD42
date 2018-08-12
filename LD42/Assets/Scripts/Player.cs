@@ -1,23 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-[RequireComponent(typeof(PlayerController))]
-public class Player : DamageableObject {
+[RequireComponent(typeof(Rigidbody2D))] 
+public class Player : MonoBehaviour {
 
     public float speed;
-    PlayerController pc;
-    public Projectile projectilePrefab;
-    public GameObject obstaclePrefab;
+    Rigidbody2D rb; 
 
+    public int startingSpaces;
+    int spaces;
+    int clearableObstacles;
+
+    public Text spacesText;
+    public Text clearableObstaclesText;
+
+    public GameObject obstaclePrefab;
+    GameObject obstacle;
+    AudioSource fxSource;
     Vector2 prevPosition;
     Vector2 currentPosition;
 
-
-    private void Start()
+    void Start()
     {
-        pc = GetComponent<PlayerController>();
+        rb = GetComponent<Rigidbody2D>();
+        fxSource = GetComponent<AudioSource>();
+        spaces = startingSpaces;
     }
+
 
     private void Update()
     {
@@ -25,27 +36,57 @@ public class Player : DamageableObject {
         currentPosition = transform.position;
 
         Vector2 inputDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
-        pc.Move(inputDir * speed);
+        rb.velocity = inputDir * speed;
 
         //Space filling mechanic
         Vector2 roundedPrevPos = new Vector2(Mathf.Round(prevPosition.x), Mathf.Round(prevPosition.y));
         Vector2 roundedCurrentPos = new Vector2(Mathf.Round(currentPosition.x), Mathf.Round(currentPosition.y));
         if(Vector2.Distance(roundedPrevPos, roundedCurrentPos) >= 1)
         {
-            Instantiate(obstaclePrefab, roundedPrevPos + Vector2.right * .5f, Quaternion.identity);
+            obstacle = Instantiate(obstaclePrefab, roundedPrevPos, Quaternion.identity);
+            obstacle.transform.parent  = GameObject.Find("Tilemap").transform;
         }
 
-        //Shooting using the mouse button
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetKeyDown(KeyCode.Space) && spaces > 0)
         {
-            Vector2 shootDir = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position).normalized * 1.5f;
-            float shootAngle = Mathf.Atan2(shootDir.y, shootDir.x) * Mathf.Rad2Deg;
+            spaces--;
+            clearableObstacles += 5;
+        }
 
-            Debug.Log(shootAngle);
-            Projectile projectile = Instantiate(projectilePrefab, (Vector2)transform.position + shootDir,
-                                                Quaternion.Euler(shootAngle * Vector3.forward)) as Projectile;
+        clearableObstaclesText.text = clearableObstacles.ToString();
+        spacesText.text = spaces.ToString();
+    }
 
+    private void OnCollisionEnter2D(Collision2D c)
+    {
+        if (c.gameObject.tag == "Obstacle" && clearableObstacles > 0)
+        {
+            clearableObstacles--;
+            fxSource.Play();
+            Destroy(c.gameObject);
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D c)
+    {
+        if (c.gameObject.tag == "Space")
+        {
+            spaces++;
+            Destroy(c.gameObject);
+        }
+        else if (c.gameObject.tag == "Lava")
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        Debug.Log("dead lol");
+    }
+
+    void  Win()
+    {
+
+    }
 }
