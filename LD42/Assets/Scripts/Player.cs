@@ -27,6 +27,7 @@ public class Player : MonoBehaviour {
         rb = GetComponent<Rigidbody2D>();
         fxSource = GetComponent<AudioSource>();
         spaces = startingSpaces;
+        currentPosition = transform.position;
     }
 
 
@@ -55,6 +56,7 @@ public class Player : MonoBehaviour {
 
         clearableObstaclesText.text = clearableObstacles.ToString();
         spacesText.text = spaces.ToString();
+
     }
 
     private void OnCollisionEnter2D(Collision2D c)
