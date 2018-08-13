@@ -10,40 +10,74 @@ public class GameController : MonoBehaviour{
     static MovingPlatform[] platforms;
 
     public GameObject pausedMenu;
-    
+    public GameObject gameOverScreen;
+    public GameObject victoryScreen;
+    public GameObject creditsScreen;
 
     private void Start()
     {
-        player = GameObject.Find("Player").GetComponent<Player>();
+        if(GameObject.Find("Player") != null)
+        {
+            player = GameObject.Find("Player").GetComponent<Player>();
+        }
+        
         platforms = FindObjectsOfType<MovingPlatform>();
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if(Input.GetKeyDown(KeyCode.Escape) && gameOverScreen != null && victoryScreen != null)
         {
-            Pause();
+            if(!gameOverScreen.activeSelf && !victoryScreen.activeSelf)
+                Pause();
+        }
+
+        if(Input.GetKeyDown(KeyCode.Escape) && creditsScreen != null)
+        {
+            creditsScreen.SetActive(false);
         }
     }
 
-    public static void GameOver()
+    public void GameOver()
     {
-
+        Pause();
+        pausedMenu.SetActive(false);
+        gameOverScreen.SetActive(true);
     }
 
-    public static void MainMenu()
+    public void Victory()
     {
-
+        Pause();
+        pausedMenu.SetActive(false);
+        victoryScreen.SetActive(true);
     }
 
-    public static void NextLevel()
+    public void MainMenu()
     {
-        
+        SceneManager.LoadScene("Main Menu");
     }
 
-    public static void PrevLevel()
+    public void Credits()
     {
-        
+        if(creditsScreen != null)
+        {
+            creditsScreen.SetActive(true);
+        }
+    }
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void NextLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
+    public void PrevLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
 
     public void Pause()
@@ -51,7 +85,7 @@ public class GameController : MonoBehaviour{
         if(player.enabled == true)
         {
             player.enabled = false;
-            pausedMenu.SetActive(false);
+            pausedMenu.SetActive(true);
             
             foreach (var p in platforms)
             {
@@ -61,11 +95,16 @@ public class GameController : MonoBehaviour{
         else
         {
             player.enabled = true;
-            pausedMenu.SetActive(true);
+            pausedMenu.SetActive(false);
             foreach (var p in platforms)
             {
                 p.enabled = true;
             }
         }
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
 }

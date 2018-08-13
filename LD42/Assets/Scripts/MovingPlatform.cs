@@ -55,20 +55,26 @@ public class MovingPlatform : MonoBehaviour {
                 }
             }
             
-            rb.MovePosition(Vector2.MoveTowards(rb.position, startingPoint + destination, speed * Time.fixedDeltaTime));
+            rb.position = (Vector2.MoveTowards(rb.position, startingPoint + destination, speed * Time.fixedDeltaTime));
             yield return new WaitForFixedUpdate();
         }
     }
 
     private void OnCollisionEnter2D(Collision2D c)
     {
-        isColliding = true;
-        Debug.Log(isColliding);
+        if (c.gameObject.tag != "Player")
+        {
+            isColliding = true;
+            Debug.Log(isColliding);
+        }
     }
 
     private void OnCollisionExit2D(Collision2D c)
     {
-        isColliding = false;
-        Debug.Log(isColliding);
+        if(c.gameObject.tag != "Player")
+        {
+            isColliding = false;
+            Debug.Log(isColliding);
+        }
     }
 }

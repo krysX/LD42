@@ -8,6 +8,8 @@ TagManager:
   - Space
   - Lava
   - MovingObstacle
+  - End
+  - MapBorder
   layers:
   - Default
   - TransparentFX

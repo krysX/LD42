@@ -7,7 +7,8 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour {
 
     public float speed;
-    Rigidbody2D rb; 
+    Rigidbody2D rb;
+    PlayerCollision playerCollision;
 
     public int startingSpaces;
     int spaces;
@@ -17,8 +18,11 @@ public class Player : MonoBehaviour {
     public Text clearableObstaclesText;
 
     public GameObject obstaclePrefab;
+    public float obstacleAnimSpeed;
+
     GameObject obstacle;
     AudioSource fxSource;
+
     Vector2 prevPosition;
     Vector2 currentPosition;
 
@@ -46,6 +50,8 @@ public class Player : MonoBehaviour {
         {
             obstacle = Instantiate(obstaclePrefab, roundedPrevPos, Quaternion.identity);
             obstacle.transform.parent  = GameObject.Find("Tilemap").transform;
+            ObstacleAppearAnimation obstAnim = obstacle.AddComponent<ObstacleAppearAnimation>();
+            obstAnim.SetSpeed(obstacleAnimSpeed);
         }
 
         if(Input.GetKeyDown(KeyCode.Space) && spaces > 0)
@@ -54,8 +60,15 @@ public class Player : MonoBehaviour {
             clearableObstacles += 5;
         }
 
-        clearableObstaclesText.text = clearableObstacles.ToString();
-        spacesText.text = spaces.ToString();
+        if(clearableObstaclesText != null && spacesText != null)
+        {
+            clearableObstaclesText.text = clearableObstacles.ToString();
+            spacesText.text = spaces.ToString();
+        }
+        
+
+        if (IsWalled())
+            Die();
 
     }
 
@@ -80,15 +93,48 @@ public class Player : MonoBehaviour {
         {
             Die();
         }
+        else if (c.gameObject.tag == "End")
+        {
+            Win();
+        }
     }
 
-    void Die()
+    bool IsWalled()
     {
-        Debug.Log("dead lol");
+        RaycastHit2D[] hits = new RaycastHit2D[4];
+        hits[0] = Physics2D.Raycast((Vector2)transform.position + Vector2.up * .5f, (Vector2)transform.position + Vector2.up, 1f);
+        hits[1] = Physics2D.Raycast((Vector2)transform.position + Vector2.down * .5f, (Vector2)transform.position + Vector2.down, 1f);
+        hits[2] = Physics2D.Raycast((Vector2)transform.position + Vector2.left * .5f, (Vector2)transform.position + Vector2.left, 1f);
+        hits[3] = Physics2D.Raycast((Vector2)transform.position + Vector2.right * .7f, (Vector2)transform.position + Vector2.right, 1f);
+
+        bool colliding = true;
+        foreach(RaycastHit2D hit in hits)
+        {
+            colliding &= hit.collider != null;
+        }
+        
+        if(colliding)
+        {
+            bool result = true;
+            foreach(RaycastHit2D hit in hits)
+            {
+                result &= hit.collider.tag == "Obstacle" || hit.collider.tag == "MapBorder";
+            }
+
+            result &= spaces <= 0 && clearableObstacles <= 0;
+            return result;
+        }
+        return false;
+    }
+        void Die()
+    {
+        GameController gc = GameObject.Find("Game Controller").GetComponent<GameController>();
+        gc.GameOver();
     }
 
     void  Win()
     {
-
+        GameController gc = GameObject.Find("Game Controller").GetComponent<GameController>();
+        gc.Victory();
     }
 }
