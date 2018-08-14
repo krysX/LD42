@@ -14,6 +14,11 @@ You will leave obstacles behind you as you go. So don't be walled in 'cause then
 - You can see your space data in the top right corner.
   - On the right of the slash is how many times you can use the space ablility.
   - On the left side of the slash is the amount of obstacles can you clear at the moment.
+  
+## Made using
+- Unity
+- Paint.net
+- Ableton Live 9
 
 ## Known bugs
 - Spawned obstacles are white in some circumstances
