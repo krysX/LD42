@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Obstacle
+  - Space
+  - Lava
+  - MovingObstacle
+  - End
+  - MapBorder
   layers:
   - Default
   - TransparentFX
@@ -38,6 +44,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2226692053
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
