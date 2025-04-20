@@ -8,7 +8,7 @@ The goal is to reach the end point(blue). If you touch the lava you die.
 You will leave obstacles behind you as you go. So don't be walled in 'cause then you also die.
 
 Unfortunately there are no builds in this repo, you have to build the game yourself.
-[Here's a video:](https://drive.google.com/file/d/1aEF7QKryuaX-1KCnuQJCHWReGeA7-_iB/view?usp=sharing)
+[Here's a video of it (an earlier version)]](https://drive.google.com/file/d/1aEF7QKryuaX-1KCnuQJCHWReGeA7-_iB/view?usp=sharing)
 
 ## Controls/Mechanics
 - Use WASD or arrow keys to move - but be careful of your moves.
