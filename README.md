@@ -7,6 +7,9 @@ And Ludum Dare is a jam where I ran out of time. So there's only 1 level in the 
 The goal is to reach the end point(blue). If you touch the lava you die.
 You will leave obstacles behind you as you go. So don't be walled in 'cause then you also die.
 
+Unfortunately there are no builds in this repo, you have to build the game yourself.
+[Here's a video of it (an earlier version)](https://drive.google.com/file/d/1aEF7QKryuaX-1KCnuQJCHWReGeA7-_iB/view?usp=sharing)
+
 ## Controls/Mechanics
 - Use WASD or arrow keys to move - but be careful of your moves.
 - Space gives you space - pressing space gives you the ability to clear 5 obstacles - but manage your spaces well 'cause you'll clear any obstacle you collide with (including your own trace)
